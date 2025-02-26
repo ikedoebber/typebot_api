@@ -1,80 +1,112 @@
 import json
+import logging
+import requests
 from django.http import JsonResponse
-from escpos.printer import Usb
 from django.views.decorators.csrf import csrf_exempt
+
+# Configuração do logger
+logger = logging.getLogger(__name__)
+
+# Definição de constantes (verifique se essas variáveis estão definidas corretamente)
+PRINTNODE_URL = "https://api.printnode.com/printjobs"
+HEADERS = {"Authorization": "Basic SEU_TOKEN_AQUI"}  # Substitua pelo seu token real
+PRINTER_ID = "1"  # Substitua pelo ID da impressora correta
 
 @csrf_exempt
 def webhook_pedido(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
+    """Handle incoming order webhook and print receipt."""
+    if request.method != "POST":
+        return JsonResponse({"status": "error", "message": "Método não permitido"}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        logger.info(f"Received order webhook: {data.get('numero_pedido', 'unknown')}")
 
-            numero_pedido = data.get("numero_pedido", "0000")
-            pushName = data.get("pushName", "Cliente")
-            entrega_tipo = data.get("Entrega", "Retirada no Local")
-            fechamento_total = data.get("fechamento_total", "0,00")
-            observacao = data.get("observacao", "")
-            troco = data.get("troco", "")
+        # Extração segura de dados
+        numero_pedido = data.get("numero_pedido", "0000")
+        pushName = data.get("pushName", "Cliente")
+        entrega_tipo = data.get("Entrega", "Retirada no Local")
+        fechamento_total = data.get("fechamento_total", "0,00")
+        observacao = data.get("observacao", "")
+        troco = data.get("troco", "")
 
-            # Configura a impressora (USB)
-            p = Usb(0x04b8, 0x0e15)  # Altere os valores conforme o modelo Bematch 420
+        # Construção do texto do pedido
+        texto_pedido = "N O V O   P E D I D O\n"
+        texto_pedido += "==============================\n"
+        texto_pedido += f"Pedido: {numero_pedido}\n"
+        texto_pedido += f"Nome: {pushName}\n"
 
-            # Layout do pedido
-            p.set(align="center", text_type="B", width=2, height=2)
-            p.text("N O V O   P E D I D O\n")
-            p.text("==============================\n")
+        if entrega_tipo == "Tele Entrega":
+            endereco = data.get("endereco", "Não informado")
+            bairro = data.get("bairro", "Não informado")
+            complemento = data.get("complemento", "Não informado")
+            taxa_entrega = data.get("taxa_entrega", "0,00")
 
-            p.set(align="left", text_type="B", width=1, height=1)
-            p.text(f"Pedido: {numero_pedido}\n")
-            p.text(f"Nome: {pushName}\n")
+            texto_pedido += f"🏡 Endereço: {endereco}\n"
+            texto_pedido += f"Bairro: {bairro}\n"
+            texto_pedido += f"Complemento: {complemento}\n"
+            texto_pedido += f"🚛 Taxa de Entrega: R$ {taxa_entrega}\n"
+        
+        elif entrega_tipo == "Comer no Local":
+            mesa = data.get("mesa", "Não informado")
+            texto_pedido += "📍 Local: Comer no Local\n"
+            texto_pedido += f"🪑 Mesa: {mesa}\n"
 
-            if entrega_tipo == "Tele Entrega":
-                endereco = data.get("endereco", "Não informado")
-                bairro = data.get("bairro", "Não informado")
-                complemento = data.get("complemento", "Não informado")
-                taxa_entrega = data.get("taxa_entrega", "0,00")
+        else:  # Retirada no Local
+            texto_pedido += "📍 Local: Retirada no Local\n"
 
-                p.text(f"🏡 Endereço: {endereco}\n")
-                p.text(f"Bairro: {bairro}\n")
-                p.text(f"Complemento: {complemento}\n")
-                p.text(f"🚛 Taxa de Entrega: R$ {taxa_entrega}\n")
+        texto_pedido += "==============================\n"
+        texto_pedido += f"TOTAL: R$ {fechamento_total}\n"
+        texto_pedido += "==============================\n"
 
-            elif entrega_tipo == "Comer no Local":
-                mesa = data.get("mesa", "Não informado")
-                p.text("📍 Local: Comer no Local\n")
-                p.text(f"🪑 Mesa: {mesa}\n")
+        if observacao:
+            texto_pedido += f"📄 Observação: {observacao}\n"
+        
+        if troco:
+            texto_pedido += f"💰 Troco: {troco}\n"
+        
+        if entrega_tipo == "Tele Entrega":
+            texto_pedido += "🕐 Prazo de entrega: 40 min\n"
+        elif entrega_tipo == "Comer no Local":
+            texto_pedido += "🕐 Pedido será servido em breve!\n"
+        else:
+            texto_pedido += "🕐 Prazo médio para retirada: 20 min\n"
 
-            else:  # Retirada no Local
-                p.text("📍 Local: Retirada no Local\n")
+        texto_pedido += "\n\n"
 
-            p.text("==============================\n")
-            p.set(align="center", text_type="B", width=2, height=2)
-            p.text(f"TOTAL: R$ {fechamento_total}\n")
-            p.set(align="left", text_type="B", width=1, height=1)
-            p.text("==============================\n")
+        # Payload para impressão
+        payload = {
+            "printer": {"id": int(PRINTER_ID) if PRINTER_ID.isdigit() else PRINTER_ID},
+            "title": f"Pedido #{numero_pedido}",
+            "contentType": "text/plain",
+            "content": texto_pedido,
+            "options": {"copies": 1}
+        }
 
-            if observacao:
-                p.text(f"📄 Observação: {observacao}\n")
+        # Enviar para PrintNode
+        logger.info(f"Sending print job for order #{numero_pedido}")
+        response = requests.post(PRINTNODE_URL, headers=HEADERS, json=payload)
 
-            if troco:
-                p.text(f"💰 Troco: {troco}\n")
+        if response.status_code in (200, 201):
+            logger.info(f"Successfully printed order #{numero_pedido}")
+            return JsonResponse({
+                "status": "success",
+                "message": "Pedido impresso com sucesso!",
+                "print_job_id": response.json().get("id")
+            })
+        else:
+            error_message = f"PrintNode error: {response.status_code} - {response.text}"
+            logger.error(error_message)
+            return JsonResponse({
+                "status": "error",
+                "message": "Erro ao enviar para o PrintNode",
+                "details": error_message
+            }, status=500)
 
-            if entrega_tipo == "Tele Entrega":
-                p.text("🕐 Prazo de entrega: 40 min\n")
-            elif entrega_tipo == "Comer no Local":
-                p.text("🕐 Pedido será servido em breve!\n")
-            else:
-                p.text("🕐 Prazo médio para retirada: 20 min\n")
+    except json.JSONDecodeError:
+        logger.error("Invalid JSON received in webhook")
+        return JsonResponse({"status": "error", "message": "JSON inválido"}, status=400)
 
-            p.text("\n\n")  # Pula linhas
-            p.cut()  # Corta o papel
-
-            return JsonResponse({"status": "success", "message": "Pedido impresso com sucesso!"})
-
-        except json.JSONDecodeError:
-            return JsonResponse({"status": "error", "message": "JSON inválido"}, status=400)
-
-        except Exception as e:
-            return JsonResponse({"status": "error", "message": f"Erro ao imprimir: {str(e)}"}, status=500)
-
-    return JsonResponse({"status": "error", "message": "Método não permitido"}, status=405)
+    except Exception as e:
+        logger.exception(f"Unexpected error in webhook_pedido: {str(e)}")
+        return JsonResponse({"status": "error", "message": f"Erro ao imprimir: {str(e)}"}, status=500)

@@ -1,6 +1,5 @@
 from pathlib import Path
 import os
-from decouple import config
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,12 +30,12 @@ INSTALLED_APPS = [
     'rest_framework',
     'mptt',
     'corsheaders',
-    
+
     'categorias',
     'clientes',
     'produtos',
     'pedidos',
-    
+
 ]
 
 MIDDLEWARE = [
@@ -78,12 +77,15 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'typebot',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ikedoebber$typebot_api',
+        'USER': 'ikedoebber',
+        'PASSWORD': 'davi180324',
+        'HOST': 'ikedoebber.mysql.pythonanywhere-services.com',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
     }
 }
 
@@ -120,16 +122,18 @@ USE_I18N = True
 
 USE_TZ = True
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # 🔥 Corrigido
 
-STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Adicione isso se você tiver arquivos estáticos no projeto
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # 🔥 Pasta com arquivos estáticos da aplicação
+]
 
 
 # Em produção, use:
