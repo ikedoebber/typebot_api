@@ -10,6 +10,5 @@ urlpatterns = [
     path('pedidos/<int:pk>/alterar-status/', AlterarStatusPedidoView.as_view(), name='pedido-alterar-status'),
 
     path("api/pedidos/", CriarPedidoAPIView.as_view(), name="criar_pedido"),
-    path('webhook-pedido/', webhooks.webhook_pedido, name='webhook_pedido'),
     path('webhook/pedido/', WebhookPedidoView.as_view(), name='webhook_pedido'),
 ]
