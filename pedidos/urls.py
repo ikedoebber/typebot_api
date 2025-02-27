@@ -11,4 +11,5 @@ urlpatterns = [
 
     path("api/pedidos/", CriarPedidoAPIView.as_view(), name="criar_pedido"),
     path('webhook-pedido/', webhooks.webhook_pedido, name='webhook_pedido'),
+    path('webhook/pedido/', WebhookPedidoView.as_view(), name='webhook_pedido'),
 ]
