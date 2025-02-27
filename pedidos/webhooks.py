@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from escpos.printer import Network
+from escpos.printer import Usb  # Importando a classe Usb da biblioteca python-escpos
 import logging
 import os
 
@@ -23,13 +23,13 @@ class WebhookPedidoView(APIView):
                         "message": f"Campo obrigatório faltando: {campo}"
                     }, status=status.HTTP_400_BAD_REQUEST)
 
-            # Configuração da impressora - ajuste para o IP da sua impressora
-            PRINTER_IP = os.environ.get('PRINTER_IP', '192.168.1.100')
-
-            # Inicializar a impressora
+            # Configuração da impressora USB (ajustar conforme o modelo da impressora)
+            VENDOR_ID = 0x04b8  # Exemplo, ID do fabricante da impressora (verifique o seu)
+            PRODUCT_ID = 0x0202  # Exemplo, ID do produto da impressora (verifique o seu)
             try:
-                printer = Network(PRINTER_IP)
-                logger.info(f"Conectado à impressora em {PRINTER_IP}")
+                # Inicializar a impressora USB
+                printer = Usb(VENDOR_ID, PRODUCT_ID)
+                logger.info("Conectado à impressora USB")
             except Exception as e:
                 logger.error(f"Erro ao conectar com a impressora: {str(e)}")
                 return Response({
