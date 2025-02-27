@@ -77,14 +77,12 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ikedoebber$typebot_api',
-        'USER': 'ikedoebber',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'typebot_db_4f6z',
+        'USER': 'typebot_db_4f6z_user',
         'PASSWORD': 'davi180324',
-        'HOST': 'ikedoebber.mysql.pythonanywhere-services.com',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        'HOST': '7lMZ95piwmsOIYcCb5XFOHXk9sIFwNCU',
+        'PORT': '5432',
         }
     }
 }
