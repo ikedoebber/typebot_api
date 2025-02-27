@@ -25,3 +25,4 @@ setuptools==75.8.1
 six==1.17.0
 sqlparse==0.5.3
 urllib3==2.3.0
+gunicorn==23.0.0
