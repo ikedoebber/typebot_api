@@ -76,15 +76,15 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'typebot_db_4f6z',
-        'USER': 'typebot_db_4f6z_user',
-        'PASSWORD': 'davi180324',
-        'HOST': '7lMZ95piwmsOIYcCb5XFOHXk9sIFwNCU',
-        'PORT': '5432',
-        }
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": 'typebot_api_db',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
+}
 
 
 # Password validation
