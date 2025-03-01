@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Pedido #{{ dados.numero_pedido }}</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            width: 80mm;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 5px 0;
+        }
+        .title {
+            font-size: 14px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .divider {
+            border-top: 1px dashed #000;
+            margin: 5px 0;
+        }
+        .bold {
+            font-weight: bold;
+        }
+        .section {
+            margin: 10px 0;
+        }
+        .center {
+            text-align: center;
+        }
+        .right {
+            text-align: right;
+        }
+        .item {
+            margin: 5px 0;
+        }
+        .observacao {
+            font-style: italic;
+            margin-left: 10px;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        ░N░O░V░O░<br>
+        ░P░E░D░I░D░O░
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="center">
+        {{ dados.data_formatada }}<br>
+        Pedido: {{ dados.numero_pedido }}
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="section">
+        <div class="bold">✅ DADOS DO CLIENTE</div>
+        Nome: {{ dados.pushName }}
+    </div>
+    
+    <div class="section">
+        <div class="bold">📍 Detalhes de Entrega</div>
+        <div>🏡 Endereço: {{ dados.endereco|default:'N/A' }}</div>
+        <div>Bairro: {{ dados.bairro|default:'N/A' }}</div>
+        <div>Complemento: {{ dados.complemento|default:'N/A' }}</div>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="section">
+        <div class="bold">SEU PEDIDO:</div>
+        {% for item in itens_pedido %}
+        <div class="item">{{ item.nome }}</div>
+        {% if item.observacao %}
+        <div class="observacao">Observação: {{ item.observacao }}</div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="section">
+        <div class="bold">👉 Subtotal: R$ {{ dados.Total }},00</div>
+        <div class="bold">🛵 Entrega: R$ {{ dados.taxa_entrega|default:'0' }},00</div>
+        <div class="bold">📃 Total: R$ {{ dados.fechamento_total|default:dados.Total }},00</div>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="section">
+        <div>💳 Tipo de Pagamento: {{ dados.Pagamento|default:'N/A' }}</div>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="section">
+        <div>📄 Observação: {{ dados.observacao|default:'' }}</div>
+        {% if dados.troco %}
+        <div>Troco: {{ dados.troco }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="center">
+        🕐 Prazo para entrega: 40 min
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="center" style="font-size: 10px;">
+        Impresso em: {{ data_impressao }}
+    </div>
+</body>
+</html>

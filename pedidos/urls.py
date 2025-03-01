@@ -1,6 +1,6 @@
 from django.urls import path
 from pedidos import webhooks
-from pedidos.views import PedidoRetrieveUpdateDestroyView, PedidoListView, PedidoCreateView, AlterarStatusPedidoView, CriarPedidoAPIView, WebhookPedidoView
+from pedidos.views import PedidoRetrieveUpdateDestroyView, PedidoListView, PedidoCreateView, AlterarStatusPedidoView, CriarPedidoAPIView, WebhookPedidoESCPOSView, WebhookPedidoPrintNodeView
 
 
 urlpatterns = [
@@ -10,5 +10,6 @@ urlpatterns = [
     path('pedidos/<int:pk>/alterar-status/', AlterarStatusPedidoView.as_view(), name='pedido-alterar-status'),
 
     path("api/pedidos/", CriarPedidoAPIView.as_view(), name="criar_pedido"),
-    path('webhook/pedido/', WebhookPedidoView.as_view(), name='webhook_pedido'),
+    path('api/webhook/escpos/', WebhookPedidoESCPOSView.as_view(), name='webhook-escpos'),
+    path('api/webhook/printnode/', WebhookPedidoPrintNodeView.as_view(), name='webhook-printnode'),
 ]
