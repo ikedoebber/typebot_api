@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'clientes',
     'produtos',
     'pedidos',
-
+    'accounts',
 ]
 
 MIDDLEWARE = [
