@@ -1,5 +1,6 @@
 from django.urls import path
-from pedidos.views import PedidoRetrieveUpdateDestroyView, PedidoListView, PedidoCreateView, AlterarStatusPedidoView, CriarPedidoAPIView, WebhookPedidoESCPOSView, WebhookPedidoPrintNodeView
+from pedidos.views import PedidoRetrieveUpdateDestroyView, PedidoListView, PedidoCreateView, AlterarStatusPedidoView, CriarPedidoAPIView
+from pedidos.webhooks import WebhookPedidoESCPOSView, WebhookPedidoPrintNodeView
 
 
 urlpatterns = [
