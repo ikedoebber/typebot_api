@@ -1,5 +1,4 @@
 from django.urls import path
-from pedidos import webhooks
 from pedidos.views import PedidoRetrieveUpdateDestroyView, PedidoListView, PedidoCreateView, AlterarStatusPedidoView, CriarPedidoAPIView, WebhookPedidoESCPOSView, WebhookPedidoPrintNodeView
 
 
