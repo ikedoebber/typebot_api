@@ -1,13 +1,53 @@
-from django.contrib.auth.views import LoginView
-from accounts.forms import CustomLoginForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
+from pedidos.models import Pedido
+from django.db.models import Sum
 from django.contrib.auth.decorators import login_required
 
-class CustomLoginView(LoginView):
-    template_name = "accounts/login.html"
-    authentication_form = CustomLoginForm
+
+
+def register_view(request):
+    if request.method =="POST":
+        user_form = UserCreationForm(request.POST)
+        if user_form.is_valid():
+            user_form.save()
+            return redirect('login')
+    else:
+        user_form = UserCreationForm()
+    return render(request, 'register.html', {'user_form': user_form})
+
+
+
+def login_view(request):
+    if request.method =="POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request,user)
+            return redirect('home')   
+        else:
+            login_form = AuthenticationForm()
+    else:
+        login_form = AuthenticationForm()
+    return render(request, 'login.html', {'login_form': login_form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
 
 
 @login_required
 def home(request):
-    return render(request, "home.html")
+    total_pedidos = Pedido.objects.count()
+    valor_total = Pedido.objects.aggregate(Sum('valor_total'))['valor_total__sum'] or 0
+
+    context = {
+        'total_pedidos': total_pedidos,
+        'valor_total': valor_total,
+    }
+    
+    return render(request, 'home.html', context)

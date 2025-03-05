@@ -1,12 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2>Login</h2>
-    <form method="post">
+
+<!-- Container centralizado -->
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <!-- Formulário -->
+    <form method="post" class="container my-5" style="max-width: 600px; border: 3px solid orange; border-radius: 10px; padding: 20px;">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Entrar</button>
+
+        <h2 class="text-center text-warning mb-4 fw-bold">Entre na sua Conta</h2>
+
+        <div class="mb-3">
+            <div class="text-center">
+                <div class="form-group">
+                    <!-- Usuário em negrito e simbolo @ maior -->
+                    <label for="{{ login_form.username.id_for_label }}" class="fw-bold">Usuário</label>
+                    <div class="input-group justify-content-center">
+                        <span class="input-group-text fs-4"> @ </span>
+                        <input type="text" class="form-control rounded text-center" id="{{ login_form.username.id_for_label }}" name="username" required>
+                    </div>
+                </div>
+                
+                <div class="form-group mt-4">
+                    <label for="{{ login_form.password.id_for_label }}" class="fw-bold">Senha</label>
+                    <div class="input-group justify-content-center">
+                        <span class="input-group-text fs-4">🔒</span>
+                        <input type="password" class="form-control rounded text-center" id="{{ login_form.password.id_for_label }}" name="password" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-warning w-100 fw-bold rounded">Entrar</button>
     </form>
 </div>
+
 {% endblock %}

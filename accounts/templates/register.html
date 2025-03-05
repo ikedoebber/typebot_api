@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+
+<style>
+    footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+    }
+
+
+</style>
+
+<style>
+    form {
+        width: 600px;
+        margin: 0 auto;
+        margin-top: 100px;
+        background-color: #000; /* Preto */
+        padding: 30px;
+        border: 3px solid #000;
+        border-radius: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    label {
+        display: block;
+        font-weight: bold;
+        font-size: 14px;
+        color: gold; /* Dourado */
+    }
+    
+    input {
+        width: 100%;
+        padding: 7px;
+        border: 1px solid #ccc; /* Mantém a borda cinza para contraste */
+        border-radius: 4px;
+        font-size: 18px;
+        color: gold; /* Dourado */
+        background-color: #000; /* Preto */
+    }
+    
+
+    input[type="submit"] {
+        background-color: gold; /* Fundo dourado */
+        color: black; /* Texto preto */
+        padding: 12px 20px;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 22px;
+    }
+    
+
+    .title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: bold;
+        font-size: 32px;
+        color: black; /* Cor do texto */
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+        background-color: gold; /* Cor de fundo */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    }  
+</style>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <p class="title">Bem Vindo ao <br>
+            HD Multimarcas</p>
+
+                <div class="form-group">
+                    {{ user_form.username.errors }}
+                    <label for="username">Usuário:</label>
+                    {{ user_form.username }}
+                </div>
+                <div class="form-group">
+                    {{ user_form.password1.errors }}
+                    <label for="password">Senha:</label>
+                    {{ user_form.password1 }}
+                </div>
+                <div class="form-group">
+                    {{ user_form.password2.errors }}
+                    <label for="confirm-password">Confirme a Senha:</label>
+                    {{ user_form.password2 }}
+                </div>
+
+        <input type="submit" value="Cadastrar" >
+    </form>       
+
+
+
+
+
+
+
+{% endblock %}

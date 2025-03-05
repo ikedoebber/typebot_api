@@ -2,16 +2,17 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from django.contrib.auth import views as auth_views
+from . import views
 from accounts.views import home
-from django.contrib.auth.views import LogoutView
-
+from accounts.views import register_view, login_view, logout_view
 
 urlpatterns = [
-
-    path("", home, name="home"),
-    path("logout/", LogoutView.as_view(next_page="login"), name="logout"),
     path('admin/', admin.site.urls),
-    path("accounts/", include("accounts.urls")),
+    path('', home, name='home'),
+    path('register/', register_view, name='register'),
+    path('login/', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
     path('pedidos/', include('pedidos.urls')),
     path('clientes/', include('clientes.urls')),
     path('produtos/', include('produtos.urls')),

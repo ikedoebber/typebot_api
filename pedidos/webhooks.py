@@ -221,7 +221,7 @@ class WebhookPedidoPrintNodeView(APIView):
                     })
 
             # Define qual template usar baseado no tipo de entrega
-            template_name = 'pedido_local.html' if dados['Entrega'].lower() == "comer no local" else 'pedido_entrega.html'
+            template_name = 'templates/pedido_local.html' if dados['Entrega'].lower() == "comer no local" else 'templates/pedido_entrega.html'
             
             # Render do HTML baseado no template
             contexto = {
